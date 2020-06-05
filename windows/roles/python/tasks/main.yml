@@ -1,0 +1,28 @@
+---
+# verify that pip is installed and  
+# that pywinrm is installed  
+# to allow management of windows with winrm  
+
+- name: "show os family"
+  debug:
+    msg: "ansible_os_family : {{ ansible_os_family }}"
+
+- name: "Debian package?"
+  become: true
+  package:
+    name: python3-pip
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: "RHEL package?"
+  become: true
+  package:
+    name: python-pip
+    state: present
+  when: ansible_os_family == "RedHat"
+
+
+- name: "install pywinrm"
+  pip: 
+    name: pywinrm
+    state: present

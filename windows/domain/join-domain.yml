@@ -1,0 +1,25 @@
+---
+# playbook for joining a windows domain  
+
+- hosts: some-host
+  gather_facts: no
+  tasks:
+  - name: "win dns client"
+    win_dns_client:
+      adapter_names: "*"
+      ipv4_address: 192.168.1.123
+  
+  - name: "joining domain"
+    win_domain_membership:
+      dns_domain_name: "{{ MY_DOMAIN_NAME }}"
+      hostname: "newhost"
+      domain_admin_user: "{{ MY_DOMAIN_NAME }}\\{{ DOMAIN_ADMIN_SERVICE_ACCOUNT_NAME }}"
+      domain_admin_password: "{{ DOMAIN_ADMIN_SERVICE_ACCOUNT_PWD }}"
+      state: domain
+    register: dmout
+
+  - name: "reboot if needed"
+    win_reboot:
+    when: dmout.reboot_required
+
+

@@ -1,0 +1,13 @@
+# vars for plays in this folder  
+
+MY_DOMAIN_NAME                      : "dan"
+THE_DUDE                            : "somebody"
+DOMAIN_ADMIN_SERVICE_ACCOUNT_NAME   : "account name"
+DOMAIN_ADMIN_SERVICE_ACCOUNT_PWD    : "super-secret-thing-a-ma-bob"
+
+# THE_DUDE: 
+#   - "somebody"
+#   - "nobody"
+#   - "anybody"
+#   - "everybody"
+#   - "mybuddy"

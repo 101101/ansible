@@ -1,0 +1,12 @@
+---
+# playbook for creating a windows domain  
+
+- hosts: remote-host
+  gather_facts: no
+  tasks:
+  - name: "create domain"
+    win_domain:
+      dns_domain_name: "{{ MY_DOMAIN_NAME }}.local"
+      safe_mode_password: super-secret-password
+
+

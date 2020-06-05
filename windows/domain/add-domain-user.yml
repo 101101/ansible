@@ -1,0 +1,15 @@
+---
+# playbook for creating a windows domain  
+
+- hosts: remote-host
+  gather_facts: no
+  tasks:
+  - name: "adding {{ THE_DUDE }} as a domain user"
+    win_domain_user:
+      name: "{{ THE_DUDE }}"
+      upn: "{{ THE_DUDE }}@{{ MY_DOMAIN_NAME }}.local"
+      groups: 
+        - Domain Admins
+        
+
+

@@ -1,0 +1,13 @@
+---
+# playbook for validating the ssh-agent service on windows  
+
+- hosts: win
+  gather_facts: no
+  tasks:
+  - name: "ssh-agent service config"
+    win_service:
+      name: ssh-agent
+      state: running
+      start_mode: automatic
+
+

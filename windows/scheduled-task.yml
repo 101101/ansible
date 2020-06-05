@@ -1,0 +1,35 @@
+---
+## Playbook to: Schedule a curl to run under Scheduled Tasks  
+## NOTE: If you are on Windows 10, version 1803 or later, your OS ships with a copy of curl, already set up and ready to use  
+
+hosts: localhost
+
+tasks:
+## Command to run  
+## schtasks /create /SC MINUTE /MO 5 /TN DeadManSnitch /TR "curl https://nosnch.in/c1f6f01718"  
+  - name: "Schedule cURL to run in Scheduled Tasks"  
+    win_scheduled_task:
+      name: DeadManSnitch
+      description: cURL to DeadManSnitch
+      author: Dan Smith
+      hidden: yes
+      actions:
+      - path: curl
+        arguments: https://nosnch.in/c1f6f01718
+      triggers:
+      - type: minute
+        repetition: 
+          interval: PT5M
+      wake_to_run: yes
+      state: present
+      enabled: yes
+
+  - name: "Verify that DeadManSnitch is created"
+    win_scheduled_task_stat:
+      name: DeadManSnitch
+    register: task_stat
+
+  - name: "Results for {{ task_stat }}"
+    debug:
+      msg: task_stat
+

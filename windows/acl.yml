@@ -1,0 +1,20 @@
+---
+# change owner and update acl on windows  
+
+- hosts: some-host
+  gather_facts: no
+  tasks:
+  - name: "change file ownership"
+    win_owner:
+      path: C:\Program Files\SomeApp
+      user: Administrator
+      recurse: true
+
+  
+  - name: "update ACLs"
+    win_acl:
+      path: C:\Temp
+      user: Users
+      rights: ReadAndExecute, Write, Delete
+      inherit: ContainerInherit, OpjectInherit
+

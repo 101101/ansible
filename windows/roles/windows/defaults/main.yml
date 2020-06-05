@@ -1,0 +1,4 @@
+---
+# default vars for using winrm to manage windows  
+ansible_connection                    : "winrm"
+ansible_winrm_server_cert_validation  : "ignore"

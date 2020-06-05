@@ -1,0 +1,14 @@
+---
+# playbook for updating windows  
+
+- hosts: win
+  gather_facts: no
+  tasks:
+  - name: "update windows"
+    win_updates:
+      category_names: CriticalUpdates
+      reboot: yes
+      # blacklist:
+      #   - abc
+      #   - xyz
+

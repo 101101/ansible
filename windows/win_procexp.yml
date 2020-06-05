@@ -1,0 +1,23 @@
+---
+# ensure ansible box has required packages for working with windows  
+# install process explorer on windows  
+# ansible-playbook -i hosts win_procexp.yml --ask-pass  
+
+
+- hosts: localhost
+  gather_facts: yes
+  roles:
+    - python
+
+
+- hosts: win
+  roles:
+    - windows
+  gather_facts: no
+  tasks:
+  - win_chocolatey:
+      name: procexp
+      state: present
+
+
+
