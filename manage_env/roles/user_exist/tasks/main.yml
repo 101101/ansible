@@ -1,0 +1,22 @@
+---
+# check if the user already exists  
+
+
+- name: "check if {{ source_user }} exists on {{ source_host }}"
+  getent:
+    database: passwd
+    key: "{{ source_user }}"
+  delegate_to: "{{ source_host }}"
+  register: getent_passwd
+
+
+- name: "{{ source_user }} exists?"
+  debug:
+    msg: "{{ source_user }} : {{ getent_passwd }}"
+
+
+- name: "create {{ source_user }}"
+  include_role:
+    name: create_user
+  when: getent_passwd is failed
+

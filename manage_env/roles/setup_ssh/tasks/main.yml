@@ -1,0 +1,82 @@
+---
+
+
+- name: "assertions"
+  assert:
+    that:
+      - source_user != ''
+      - source_host != ''
+      - target_user != ''
+      - target_host != ''
+  tags:
+    - check_vars
+
+
+
+
+# - name: "Get {{ source_user }} SSH public keys"
+#   local_action: shell ssh-add -L
+#   register: ssh_keys
+#   delegate_to: "{{ source_host }}"
+
+- name: "Validate that a pub key exists for {{ source_user }} on {{ source_host }}"
+  stat:
+    path: "/home/{{ source_user }}/.ssh/*.pub"
+  when: (ansible_os_family == "Debian") or (ansible_os_family == "RedHat")  
+  delegate_to: "{{ source_host }}"
+  register: cert
+
+- name: "check status of file"
+  debug:
+    msg: "cert : {{ cert.stdout }}"
+  when: "{{ cert.stdout }} is failed"
+
+- name: "Slurp the remote file"
+  slurp:
+    src: "/home/{{ source_user }}/.ssh/*.pub)"
+  register: slurped_user_data
+  delegate_to: "{{ source_host }}"
+  when: "{{ cert }} == true"
+
+  # linter doesn't like this line, and I can't find an issue with it...  
+  # experimenting with direct to slurped_user_data.content vs ssh_key.stdout  
+# - name: "set the .pub as a var"
+#   set_fact:
+#     cacheable: yes
+#     ssh_key: "{{ slurped_user_data.content }}"
+#   when: "{{ cert }} == true"
+
+
+- name: "Deploy SSH for {{ source_user }} from {{ source_host }} for Linux machines"
+  block:
+
+    - name: "Install SSH Public Key in Target"
+      authorized_key:
+        user: "{{ target_user }}"
+        key: "{{ item }}"
+      delegate_to: "{{ target_host }}"
+      with_items: "{{ slurped_user_data.content }}"
+
+    - name: "Show the work"
+      debug:
+        msg: "{{ source_user }}@{{ source_host }} authorized to log in to {{ target_user }}@{{ target_host }}"
+  
+  when: (ansible_os_family == "Debian") or (ansible_os_family == "RedHat")
+
+
+
+# - name: "Deploy SSH for {{ source_user }} on {{ source_host }} for Windows machines"
+#   block:
+
+#     - name: "Install SSH Public Key in Target"
+#       authorized_key:
+#         user: "{{ target_user }}"
+#         key: "{{ item }}"
+#       delegate_to: "{{ target_host }}"
+#       with_items: "{{ ssh_keys.stdout }}"
+
+#     - name: "Show the work"
+#       debug:
+#         msg: "{{ source_user }}@{{ source_host }} authorized to log in to {{ target_user }}@{{ target_host }}"
+
+#   when: ansible_os_family == "Windows"

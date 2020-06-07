@@ -1,0 +1,86 @@
+---
+# create user  
+
+
+
+- name: "Create Linux account for {{ source_user }} and SSH-Key on {{ source_host }}"
+  block:
+
+    - name: "Generate SSH Keypair in Source"
+      user:
+        name: "{{ source_user }}"
+        state: present
+        ssh_key_comment: "ansible-generated for {{ source_user }}@{{ source_host }}"
+        generate_ssh_key: yes
+      delegate_to: "{{ source_host }}"
+      register: ssh_source_user
+
+    - name: "Add {{ source_user }} user to the sudoers on {{ source_host }}"
+      copy:
+        dest: "/etc/sudoers.d/{{ source_user }}"
+        content: "{{ source_user }}  ALL=(ALL)  NOPASSWD: ALL"
+      delegate_to: "{{ source_host }}"
+
+  when: (ansible_os_family == "Debian") or (ansible_os_family == "RedHat")
+
+
+
+# - name: "Create AD Domain account for {{ source_user }} and SSH-Key on {{ source_host }}"
+#   block:
+#     - name: "Ensure user bob is created and use custom credentials to create the user"
+#       win_domain_user:
+#         name: bob
+#         firstname: Bob
+#         surname: Smith
+#         password: B0bP4ssw0rd
+#         state: present
+#         domain_username: DOMAIN\admin-account
+#         domain_password: SomePas2w0rd
+#         domain_server: domain@DOMAIN.COM
+#         account_locked: no
+#         # enable / disable user account  
+#         enabled: yes
+#         # force user to change password  
+#         password_expired: yes
+#         upn: "{{ source_user }}@{{ the_domain_name }}"
+#         # for service accounts  
+#         user_cannot_change_password: no
+
+    # - name: "Create SSH key for {{ source_user }} on {{ source_host }}" 
+    #   openssh_keypair:
+    #     path: "C:\\Users\\{{ source_user }}\\.ssh\\{{ source_user }}"
+    #     owner: "{{ source_user }}"
+    #     comment: "ansible generated ed25519 ssh key for {{ source_user }}@{{ source_host }}"
+    #     type: ed25519
+    #     state: present
+    #   delegate_to: "{{ source_host }}
+
+#   when: argument here
+
+
+
+- name: "Create Windows local account for {{ source_user }} and SSH-Key on {{ source_host }}"
+  block:
+    - name: "Create account for {{ source_user }}"
+      win_user:
+        name: "{{ source_user }}"
+        state: present
+        # set the user password  
+        # password: "{{ plain_text_password }}"
+        account_disabled: no
+        account_locked: no
+        # force user to change password on next login  
+        password_expired: yes
+        # for service accounts  
+        user_cannot_change_password: no
+
+    - name: "Create SSH key for {{ source_user }} on {{ source_host }}" 
+      openssh_keypair:
+        path: "C:\\Users\\{{ source_user }}\\.ssh\\{{ source_user }}"
+        owner: "{{ source_user }}"
+        comment: "ansible generated ed25519 ssh key for {{ source_user }}@{{ source_host }}"
+        type: ed25519
+        state: present
+      delegate_to: "{{ source_host }}"
+
+  when: ansible_os_family == "Windows"

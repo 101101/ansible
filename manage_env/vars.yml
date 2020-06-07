@@ -1,0 +1,17 @@
+## setup non-root user  
+
+user_name: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+host_server_list: 
+  - "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+
+
+
+target_server_list: 
+  - "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+
+
+
+

@@ -1,0 +1,32 @@
+---
+# take inputs: user_name, host, target  
+# validate user exists, create if not exists  
+# validate ssh pub key exists, create if not exists  
+# validate on target  
+# lock down root  
+
+
+- hosts: localhost
+  gather_facts: no
+  roles:
+    - user_exist
+
+
+- name: "Authorize User"
+  include_role:
+    name: setup_ssh
+  vars:
+    source_user: "{{ user_name }}"
+    source_host: "{{ item[0] }}"
+    target_user: "{{ user_name }}"
+    target_host: "{{ item[1] }}"
+  with_nested:
+    - "{{ host_server_list }}"
+    - "{{ target_server_list }}"
+
+
+# kill ssh password auth and disable root login  
+# - name: "lockdown root"
+#   include_role:
+#     name: kill_root
+
